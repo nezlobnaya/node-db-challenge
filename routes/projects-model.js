@@ -35,7 +35,9 @@ module.exports = {
     }
 
     function getResources() {
-        return db('resources')
+        return db('resources as r')
+        .select('r.name', 'r.description', 'pr.project_id')
+        .join('projects_resources as pr', 'pr.resource_id', 'r.id')
     }
 
     function getResourcesByProject(id) {
@@ -51,7 +53,7 @@ module.exports = {
 
     function getProjectById(id) {
         let query = db('projects as p').where( 'p.id', id ).first()
-        const promises = [query, this.getTasks(id), this.getResources(id)]
+        const promises = [query, this.getTasks(id), this.getResourcesByProject(id)]
 
         return Promise.all(promises)
             .then(function(results) {
@@ -71,12 +73,17 @@ module.exports = {
         return db('tasks').where({ project_id: id })
     }
 
-    function addResource(resource, id) {
-        resource = {...resource, id};
+    function addResource(projectId, resource) {
         return db('resources as r').insert(resource)
-        .then ( () => {
+        .then (([id]) => {
+            return db('projects_resources as pr').insert({
+                project_id: projectId,
+                resource_id: id
+            })
+        .then (() => {
             return resource
         })
+     })
     }
 
     function addProject(project) {
@@ -93,4 +100,3 @@ module.exports = {
             return task
         })
     }
-

@@ -124,13 +124,13 @@ router.post('/:id/tasks', (req, res) => {
   });
 
   router.post('/:id/resources', (req, res) => {
-    const resourceData = req.body;
-    const { id } = req.params; 
+    // const resourceData = req.body;
+    // const { id } = req.params; 
   
-    Projects.getProjectById(id)
+    Projects.getProjectById(req.params.id)
     .then(project => {
       if (project) {
-        Projects.addResource(resourceData)
+        Projects.addResource(req.params.id, req.body)
         .then(resource => {
           res.status(201).json(resource);
         })
@@ -143,5 +143,6 @@ router.post('/:id/tasks', (req, res) => {
       res.status(500).json({ message: 'Failed to create new resource' });
     });
   });
+
 
 module.exports = router
