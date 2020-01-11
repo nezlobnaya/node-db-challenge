@@ -1,12 +1,17 @@
 const express = require('express')
 const helmet = require('helmet')
 
+const ProjectsRouter = require('./routes/projects-router')
+const resourcesRouter = require('./routes/resources-router')
+
 const server = express()
 
 server.use(helmet())
 server.use(express.json())
+server.use('/api/projects', ProjectsRouter)
+server.use('/api/resources', resourcesRouter)
 
-server.get('/', (req,res) => {
+server.get('/', (req, res) => {
     const messageOfTheDay = process.env.MOTD
     res.send(`<h2>${messageOfTheDay}</h2>`)
 })
@@ -14,7 +19,7 @@ server.get('/', (req,res) => {
 server.use((err, req, res, next) => {
     console.log(err)
     res.status(500).json({
-        message: "Bad mistake, Engineer!", err
+        message: "Bad mistake, Engineer!", err 
     })
 })
 
