@@ -19,64 +19,60 @@ router.get('/', (req, res, next) => {
 
 
 
-// router.get('/:id', (req, res, next) => {
-//     const { id } = req.params
+router.get('/:id', (req, res, next) => {
+    const { id } = req.params
 
-//     Tasks.getTaskById(id)
-//     .then(task => {
-//         const booleanTask = {
-//             ...task,
-//             completed: !!+`${task.completed}`
-//         }
-//         if (task) {
-//             res.json(booleanTask);
-//         } else {
-//             res.status(404).json({ message: 'Could not find task with given id.' })
-//         }
-//     })
-//     .catch (err => {
-//         next(err)
-//     })
-// })
+    Contexts.findContextById(id)
+    .then(context => {
+        if (context) {
+            res.json(context);
+        } else {
+            res.status(404).json({ message: 'Could not find context with given id.' })
+        }
+    })
+    .catch (err => {
+        next(err)
+    })
+})
 
-// router.delete('/:id', (req, res) => {
-//     const { id } = req.params;
+router.delete('/:id', (req, res) => {
+    const { id } = req.params;
   
-//     Tasks.removeTask(id)
-//     .then(deleted => {
-//       if (deleted) {
-//         res.json({ removed: deleted });
-//       } else {
-//         res.status(404).json({ message: 'Could not find task with given id' });
-//       }
-//     })
-//     .catch(err => {
-//         console.log(err)
-//       res.status(500).json({ message: 'Failed to delete task' });
-//     });
-//   });
+    Contexts.removeContext(id)
+    .then(deleted => {
+      if (deleted) {
+        res.json({ removed: deleted });
+      } else {
+        res.status(404).json({ message: 'Could not find context with given id' });
+      }
+    })
+    .catch(err => {
+        console.log(err)
+      res.status(500).json({ message: 'Failed to delete context' });
+    });
+  });
 
 
-//   router.put('/:id', (req, res) => {
-//     const { id } = req.params;
-//     const changes = req.body;
+  router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const changes = req.body;
   
-//     Tasks.getTaskById(id)
-//     .then(task => {
-//       if (task) {
-//         Tasks.updateTask(changes, id)
-//         .then(updatedTask => {
-//           res.json(updatedTask);
-//         });
-//       } else {
-//         res.status(404).json({ message: 'Could not find task with given id' });
-//       }
-//     })
-//     .catch (err => {
-//         console.log(err)
-//       res.status(500).json({ message: 'Failed to update task' });
-//     });
-//   });
+    Contexts.findContextById(id)
+    .then(context => {
+      if (context) {
+        Contexts.updateContext(changes, id)
+        .then(updatedContext => {
+          res.json(updatedContext);
+        });
+      } else {
+        res.status(404).json({ message: 'Could not find context with given id' });
+      }
+    })
+    .catch (err => {
+        console.log(err)
+      res.status(500).json({ message: 'Failed to update context' });
+    });
+  });
 
 
 module.exports = router

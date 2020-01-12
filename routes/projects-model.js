@@ -22,7 +22,10 @@ module.exports = {
     projectToBody,
     findAllContexts,
     findContextsByTask,
+    findContextById,
     addContext,
+    removeContext,
+    updateContext,
     taskToBody,
 }
 
@@ -188,8 +191,16 @@ module.exports = {
         return db('resources').where({ id }).first()
     }
 
+    function findContextById(id) {
+        return db('contexts').where({ id }).first()
+    }
+
     function removeResource(id) {
         return db('resources').where({ id }).del()
+    }
+
+    function removeContext(id) {
+        return db('contexts').where({ id }).del()
     }
 
     function removeProject(id) {
@@ -218,5 +229,12 @@ module.exports = {
         return db('resources').where({ id }).update(changes)
         .then(count => {
             return getResourceById(id)
+        })
+    }
+
+    function updateContext(changes, id) {
+        return db('contexts').where({ id }).update(changes)
+        .then(count => {
+            return findContextById(id)
         })
     }
