@@ -98,6 +98,7 @@ router.post('/', (req, res) => {
       res.status(201).json(booleanProject);
     })
     .catch (err => {
+        console.log(err)
       res.status(500).json({ message: 'Failed to create new project' });
     });
   });
@@ -143,6 +144,45 @@ router.post('/:id/tasks', (req, res) => {
       res.status(500).json({ message: 'Failed to create new resource' });
     });
   });
+
+  router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+  
+    Projects.removeProject(id)
+    .then(deleted => {
+      if (deleted) {
+        res.json({ removed: deleted });
+      } else {
+        res.status(404).json({ message: 'Could not find project with given id' });
+      }
+    })
+    .catch(err => {
+        console.log(err)
+      res.status(500).json({ message: 'Failed to delete project' });
+    });
+  });
+
+  router.put('/:id', (req, res) => {
+    const { id } = req.params;
+    const changes = req.body;
+  
+    Projects.getProjectById(id)
+    .then(project => {
+      if (project) {
+        Projects.updateProject(changes, id)
+        .then(updatedProject => {
+          res.json(updatedProject);
+        });
+      } else {
+        res.status(404).json({ message: 'Could not find project with given id' });
+      }
+    })
+    .catch (err => {
+        console.log(err)
+      res.status(500).json({ message: 'Failed to update project' });
+    });
+  });
+  
 
 
 module.exports = router

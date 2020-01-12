@@ -3,6 +3,7 @@ const helmet = require('helmet')
 
 const ProjectsRouter = require('./routes/projects-router')
 const resourcesRouter = require('./routes/resources-router')
+const tasksRouter = require('./routes/tasks-router')
 
 const server = express()
 
@@ -10,6 +11,7 @@ server.use(helmet())
 server.use(express.json())
 server.use('/api/projects', ProjectsRouter)
 server.use('/api/resources', resourcesRouter)
+server.use('/api/tasks', tasksRouter)
 
 server.get('/', (req, res) => {
     const messageOfTheDay = process.env.MOTD

@@ -3,12 +3,21 @@ const db = require('../data/db-config')
 module.exports = {
     getResources,
     getResourcesByProject,
+    getResourceById,
     getAllProjects,
+    getProjectById,//stretch
     getTasks,
+    getAllTasks,
+    getTaskById,
     addResource,
     addProject,
     addTask,
-    getProjectById,//stretch
+    removeResource,
+    removeProject,
+    removeTask,
+    updateProject,
+    updateTask,
+    updateResource,
     intToBoolean,
     projectToBody,
 }
@@ -36,7 +45,7 @@ module.exports = {
 
     function getResources() {
         return db('resources as r')
-        .select('r.name', 'r.description', 'pr.project_id')
+        .select('r.id','r.name', 'r.description', 'pr.project_id')
         .join('projects_resources as pr', 'pr.resource_id', 'r.id')
     }
 
@@ -73,6 +82,10 @@ module.exports = {
         return db('tasks').where({ project_id: id })
     }
 
+    function getAllTasks() {
+        return db('tasks')
+    }
+
     function addResource(projectId, resource) {
         return db('resources as r').insert(resource)
         .then (([id]) => {
@@ -98,5 +111,46 @@ module.exports = {
         return db('tasks').insert(task)
         .then(() => {
             return task
+        })
+    }
+
+    function getTaskById(id) {
+        return db('tasks').where({ id }).first()
+    }
+
+    function getResourceById(id) {
+        return db('resources').where({ id }).first()
+    }
+
+    function removeResource(id) {
+        return db('resources').where({ id }).del()
+    }
+
+    function removeProject(id) {
+        return db('projects').where({ id }).del()
+    }
+
+    function removeTask(id) {
+        return db('tasks').where({ id }).del()
+    }
+
+    function updateProject(changes, id) {
+        return db('projects').where({ id }).update(changes)
+        .then(count => {
+            return count
+        })
+    }
+
+    function updateTask(changes, id) {
+        return db('tasks').where({ id }).update(changes)
+        .then(count => {
+            return getTaskById(id)
+        })
+    }
+
+    function updateResource(changes, id) {
+        return db('resources').where({ id }).update(changes)
+        .then(count => {
+            return getResourceById(id)
         })
     }
