@@ -37,6 +37,44 @@ router.get('/:id', (req, res, next) => {
     })
 })
 
+router.get('/:id/contexts', (req, res, next) => {
+    const { id } = req.params
+
+    Tasks.findContextsByTask(id)
+    .then(contexts => {
+        if (contexts.length) {
+            res.json(contexts)
+        } else {
+            res.status(404).json({
+                message: 'Could not find contexts for given task'
+            })
+        }
+    })
+    .catch(err => {
+        next(err)
+    })
+})
+
+router.post('/:id/contexts', (req, res) => {
+  
+    Tasks.getTaskById(req.params.id)
+    .then(task => {
+      if (task) {
+        Tasks.addContext(req.params.id, req.body)
+        .then(context => {
+          res.status(201).json(context);
+        })
+      } else {
+        res.status(404).json({ message: 'Could not find task with given id.' })
+      }
+    })
+    .catch (err => {
+      console.log(err)
+      res.status(500).json({ message: 'Failed to create new context' });
+    });
+  });
+  
+
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
   

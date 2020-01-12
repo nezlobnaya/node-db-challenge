@@ -42,9 +42,33 @@ exports.up = function(knex) {
               .onDelete('CASCADE')
           tbl.primary(['project_id', 'resource_id'])
       })
+      .createTable('contexts', tbl => {
+        tbl.increments();
+        tbl.string('name', 128).unique().notNullable();
+    })
+    .createTable('tasks_contexts', tbl => {
+        tbl.integer('task_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('tasks')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
+        tbl.integer('context_id')
+            .unsigned()
+            .notNullable()
+            .references('id')
+            .inTable('contexts')
+            .onUpdate('CASCADE')
+            .onDelete('CASCADE')
+        tbl.primary(['task_id', 'context_id'])
+    })
   }
   exports.down = function(knex) {
     return knex.schema
+
+      .dropTableIfExists('tasks_contexts')
+      .dropTableIfExists('contexts')
       .dropTableIfExists('projects_resources')
       .dropTableIfExists('resources')
       .dropTableIfExists('tasks')

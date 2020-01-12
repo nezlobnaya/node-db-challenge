@@ -20,6 +20,10 @@ module.exports = {
     updateResource,
     intToBoolean,
     projectToBody,
+    findAllContexts,
+    findContextsByTask,
+    addContext,
+    taskToBody,
 }
 
     function intToBoolean(int) {
@@ -43,18 +47,28 @@ module.exports = {
         return result;
     }
 
+    function taskToBody(task) {
+        const result = {
+        ...task,
+        completed: intToBoolean(task.completed),
+        };
+    
+        // if (project.tasks) {
+        // result.tasks = project.tasks.map(task => ({
+        //     ...task,
+        //     completed: intToBoolean(task.completed),
+        // }));
+        // }
+    
+        return result;
+    }
+
     function getResources() {
         return db('resources as r')
         .select('r.id','r.name', 'r.description', 'pr.project_id')
         .join('projects_resources as pr', 'pr.resource_id', 'r.id')
     }
 
-    function getResourcesByProject(id) {
-        return db('resources as r')
-        .select('r.name', 'r.description')
-        .join('projects_resources as pr', 'pr.resource_id', 'r.id')
-        .where('pr.project_id', id)
-    }
 
     function getAllProjects() {
         return db('projects')
@@ -81,9 +95,31 @@ module.exports = {
     function getTasks(id) {
         return db('tasks').where({ project_id: id })
     }
+    
 
     function getAllTasks() {
         return db('tasks')
+    }
+
+    function findAllContexts() {
+        return db('contexts as c')
+        .select('c.id', 'c.name', 'tc.task_id')
+        .join('tasks_contexts as tc', 'tc.context_id', 'c.id')
+    }
+
+    function findContextsByTask(id) {
+        return db('contexts as c')
+        .select('c.name', 'tc.task_id', 't.completed')
+        .join('tasks_contexts as tc', 'tc.context_id', 'c.id')
+        .join('tasks as t', 't.id', 'tc.task_id')
+        .where('tc.task_id', id)
+    }
+
+    function getResourcesByProject(id) {
+        return db('resources as r')
+        .select('r.name', 'r.description')
+        .join('projects_resources as pr', 'pr.resource_id', 'r.id')
+        .where('pr.project_id', id)
     }
 
     function addResource(projectId, resource) {
@@ -95,6 +131,19 @@ module.exports = {
             })
         .then (() => {
             return resource
+        })
+     })
+    }
+
+    function addContext(taskId, context) {
+        return db('contexts as c').insert(context)
+        .then (([id]) => {
+            return db('tasks_contexts as tc').insert({
+                task_id: taskId,
+                context_id: id
+            })
+        .then (() => {
+            return context
         })
      })
     }
@@ -114,8 +163,25 @@ module.exports = {
         })
     }
 
+    // function getTaskById(id) {
+    //     return db('tasks').where({ id }).first()
+    // }
+
     function getTaskById(id) {
-        return db('tasks').where({ id }).first()
+        let query = db('tasks as t').where( 't.id', id ).first()
+        const promises = [query, this.findContextsByTask(id)]
+
+        return Promise.all(promises)
+            .then(function(results) {
+            let [task, contexts] = results;
+      
+            if (task) {
+              task.contexts = contexts;
+              return taskToBody(task);
+            } else {
+              return null;
+            }
+          });
     }
 
     function getResourceById(id) {
@@ -136,8 +202,8 @@ module.exports = {
 
     function updateProject(changes, id) {
         return db('projects').where({ id }).update(changes)
-        .then(count => {
-            return count
+        .then(project => {
+            return project
         })
     }
 
