@@ -53,12 +53,12 @@ module.exports = {
         completed: intToBoolean(task.completed),
         };
     
-        // if (project.tasks) {
-        // result.tasks = project.tasks.map(task => ({
-        //     ...task,
-        //     completed: intToBoolean(task.completed),
-        // }));
-        // }
+        if (task.contexts) {
+        result.contexts = task.contexts.map(task => ({
+            ...task,
+            completed: intToBoolean(task.completed),
+        }));
+        }
     
         return result;
     }
@@ -109,7 +109,7 @@ module.exports = {
 
     function findContextsByTask(id) {
         return db('contexts as c')
-        .select('c.name', 'tc.task_id', 't.completed')
+        .select('c.name', 'tc.task_id')
         .join('tasks_contexts as tc', 'tc.context_id', 'c.id')
         .join('tasks as t', 't.id', 'tc.task_id')
         .where('tc.task_id', id)
