@@ -4,29 +4,34 @@ module.exports = {
     getResources,
     getResourcesByProject,
     getResourceById,
+    addResource,
+    removeResource,
+    updateResource,
+
     getAllProjects,
     getProjectById,//stretch
+    addProject,
+    removeProject,
+    updateProject,
+
     getTasks,
     getAllTasks,
     getTaskById,
-    addResource,
-    addProject,
     addTask,
-    removeResource,
-    removeProject,
     removeTask,
-    updateProject,
     updateTask,
-    updateResource,
+
+
     intToBoolean,
     projectToBody,
+    taskToBody,
+
     findAllContexts,
     findContextsByTask,
     findContextById,
     addContext,
     removeContext,
     updateContext,
-    taskToBody,
 }
 
     function intToBoolean(int) {
