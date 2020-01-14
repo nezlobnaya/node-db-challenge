@@ -1,6 +1,6 @@
 const express = require('express')
 
-const Contexts = require('./projects-model')
+const Contexts = require('./contexts-model')
 
 const router = express.Router({
     mergeParams: true

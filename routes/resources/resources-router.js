@@ -1,7 +1,6 @@
 const express = require('express')
 
-const Resources = require('./projects-model')
-const Projects = require('./projects-model')
+const Resources = require('./resources-model')
 
 const router = express.Router({
     mergeParams: true
