@@ -1,6 +1,6 @@
 const express = require('express')
 
-const Tasks = require('./projects-model')
+const Tasks = require('./tasks-model')
 
 const router = express.Router({
     mergeParams: true
